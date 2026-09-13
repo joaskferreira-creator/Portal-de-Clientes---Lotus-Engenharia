@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal Clientes Lotus Engenharia| Consulta de Andamento</title>
+<meta name="description" content="Consulte o andamento do seu processo, documentação e diagramas de forma rápida e segura.">
+
+<style>
+:root{
+    --background:#f5f7fb;
+    --card:#ffffff;
+    --foreground:#1c2333;
+    --muted-foreground:#6b7280;
+    --primary:#1f5fbf;
+    --primary-dark:#174a96;
+    --border:#e3e8f0;
+    --success:#1e9e5a;
+    --success-bg:#eef9f2;
+    --warning:#b97d10;
+    --warning-bg:#fdf6e9;
+    --danger:#c93a3a;
+    --danger-bg:#fdeeee;
+    --radius:14px;
+}
+
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:40px 16px;
+
+    background:
+        radial-gradient(ellipse at top, rgba(31,95,191,0.10), transparent 55%),
+        radial-gradient(ellipse at bottom right, rgba(31,95,191,0.08), transparent 55%),
+        var(--background);
+
+    font-family:"Segoe UI", Arial, sans-serif;
+    color:var(--foreground);
+}
+
+.card{
+    width:640px;
+    max-width:100%;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:36px 32px;
+    box-shadow:0 20px 45px rgba(28,35,51,0.08);
+}
+
+/* ---------- Cabeçalho ---------- */
+
+.cabecalho{
+    text-align:center;
+    margin-bottom:28px;
+}
+
+.logo-empresa{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.logo-empresa img{
+    max-width:180px;
+    height:auto;
+    display:block;
+    margin:0 auto;
+}
+
+h1{
+    margin:0 0 6px;
+    font-size:26px;
+    font-weight:700;
+    letter-spacing:-0.3px;
+}
+
+.subtitulo{
+    margin:0;
+    color:var(--muted-foreground);
+    font-size:15px;
+    line-height:1.5;
+}
+
+/* ---------- Formulário ---------- */
+
+form{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+label{
+    font-size:14px;
+    font-weight:600;
+}
+
+.campo-busca{
+    position:relative;
+}
+
+.campo-busca svg{
+    position:absolute;
+    left:14px;
+    top:50%;
+    transform:translateY(-50%);
+    width:16px;
+    height:16px;
+    stroke:var(--muted-foreground);
+    pointer-events:none;
+}
+
+input{
+    width:100%;
+    padding:13px 14px 13px 40px;
+    font-size:15px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    outline:none;
+    transition:border-color .15s, box-shadow .15s;
+}
+
+input:focus{
+    border-color:var(--primary);
+    box-shadow:0 0 0 3px rgba(31,95,191,0.15);
+}
+
+input:disabled{opacity:.6}
+
+button{
+    width:100%;
+    padding:13px;
+    border:none;
+    border-radius:10px;
+    background:var(--primary);
+    color:#fff;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    transition:background .15s;
+}
+
+button:hover:not(:disabled){background:var(--primary-dark)}
+button:disabled{opacity:.55;cursor:not-allowed}
+
+.spinner{
+    width:16px;
+    height:16px;
+    border:2px solid rgba(255,255,255,0.4);
+    border-top-color:#fff;
+    border-radius:50%;
+    animation:girar .7s linear infinite;
+}
+
+@keyframes girar{to{transform:rotate(360deg)}}
+
+/* ---------- Alertas ---------- */
+
+.alerta{
+    margin-top:20px;
+    padding:14px 16px;
+    border-radius:10px;
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+    font-size:14px;
+    line-height:1.5;
+}
+
+.alerta svg{
+    width:18px;
+    height:18px;
+    flex-shrink:0;
+    margin-top:2px;
+}
+
+.alerta strong{display:block;margin-bottom:2px}
+
+.alerta-erro{
+    background:var(--danger-bg);
+    border:1px solid rgba(201,58,58,0.25);
+    color:var(--danger);
+}
+
+/* ---------- Resultado ---------- */
+
+#resultado{animation:aparecer .3s ease}
+
+@keyframes aparecer{
+    from{opacity:0;transform:translateY(8px)}
+    to{opacity:1;transform:translateY(0)}
+}
+
+.resultado-card{
+    margin-top:24px;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:24px;
+}
+
+.rotulo{
+    font-size:11px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:var(--muted-foreground);
+    margin:0 0 4px;
+}
+
+.nome-cliente{
+    margin:0 0 18px;
+    font-size:21px;
+    font-weight:700;
+}
+
+.grade{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+    margin-bottom:16px;
+}
+.secao{
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:16px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.04);
+}
+.secao-titulo{
+    margin:0 0 14px 0;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:var(--primary);
+}
+
+.duas-colunas{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+    margin-bottom:18px;
+}
+
+@media (max-width:700px){
+    .duas-colunas{
+        grid-template-columns:1fr;
+    }
+}
+@media (max-width:520px){
+    .grade{grid-template-columns:1fr}
+}
+
+.info{
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+    min-width:0;
+}
+
+.info svg{
+    width:16px;
+    height:16px;
+    stroke:var(--muted-foreground);
+    margin-top:2px;
+    flex-shrink:0;
+}
+
+.info .rotulo{margin-bottom:2px}
+
+.info p.valor{
+    margin:0;
+    font-size:14px;
+    font-weight:600;
+    word-break:break-word;
+}
+
+.etiqueta{
+    display:inline-block;
+    padding:3px 10px;
+    border-radius:999px;
+    background:rgba(31,95,191,0.10);
+    color:var(--primary);
+    font-size:12.5px;
+    font-weight:600;
+}
+.etiqueta-verde{
+    background:var(--success-bg);
+    color:var(--success);
+}
+
+.etiqueta-vermelha{
+    background:var(--danger-bg);
+    color:var(--danger);
+}
+
+.etiqueta-amarela{
+    background:var(--warning-bg);
+    color:var(--warning);
+}
+.separador{
+    border:none;
+    border-top:1px solid var(--border);
+    margin:18px 0;
+}
+
+/* ---------- Diagrama ---------- */
+
+.diagrama{
+    margin-top:6px;
+    padding:16px;
+    border-radius:10px;
+    display:flex;
+    gap:12px;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+}
+
+.diagrama .texto{
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+}
+
+.diagrama svg{
+    width:20px;
+    height:20px;
+    flex-shrink:0;
+    margin-top:2px;
+}
+
+.diagrama p{margin:0;font-size:14px;line-height:1.4}
+.diagrama .titulo{font-weight:600}
+.diagrama .descricao{color:var(--muted-foreground);font-size:13px}
+
+.diagrama-ok{
+    background:var(--success-bg);
+    border:1px solid rgba(30,158,90,0.25);
+}
+.diagrama-ok svg{stroke:var(--success)}
+
+.diagrama-pendente{
+    background:var(--warning-bg);
+    border:1px solid rgba(185,125,16,0.25);
+}
+.diagrama-pendente svg{stroke:var(--warning)}
+
+.botao-download{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:9px 16px;
+    border:1px solid rgba(30,158,90,0.35);
+    border-radius:8px;
+    color:var(--success);
+    font-size:14px;
+    font-weight:600;
+    text-decoration:none;
+    white-space:nowrap;
+    transition:background .15s;
+}
+
+.botao-download:hover{background:rgba(30,158,90,0.10)}
+.botao-download svg{width:15px;height:15px;margin:0}
+
+.rodape{
+    margin-top:22px;
+    text-align:center;
+    font-size:13px;
+    color:var(--muted-foreground);
+}
+</style>
+
+</head>
+
+<body>
+
+<main class="card">
+
+    <header class="cabecalho">
+    <div class="logo-empresa">
+        <img src="/static/logo.png" alt="Logo da empresa">
+    </div>
+</header>
+        <h1>Portal dos Clientes Lotus Engenharia</h1>
+        <p class="subtitulo">
+            Consulte o andamento do seu processo, documentação e diagramas
+            de forma rápida e segura.
+        </p>
+    </header>
+
+    <form onsubmit="consultar(event)">
+        <label for="codigo">Código do cliente</label>
+
+        <div class="campo-busca">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.3-4.3"/>
+            </svg>
+            <input
+                id="codigo"
+                type="text"
+                placeholder="Digite seu código de acesso"
+                autocomplete="off"
+            >
+        </div>
+
+        <button type="submit" id="botao">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.3-4.3"/>
+            </svg>
+            Consultar
+        </button>
+    </form>
+
+    <div id="resultado"></div>
+
+</main>
+
+<script>
+
+const campoCodigo = document.getElementById("codigo");
+const botao = document.getElementById("botao");
+const areaResultado = document.getElementById("resultado");
+
+const ICONES = {
+    arquivo: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>`,
+    escudo: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+    predio: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01M16 6h.01M12 6h.01M8 10h.01M16 10h.01M12 10h.01M8 14h.01M16 14h.01M12 14h.01"/></svg>`,
+    pessoas: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+    ok: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>`,
+    erro: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/></svg>`,
+    download: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>`
+};
+
+function escapar(texto){
+    const div = document.createElement("div");
+    div.textContent = texto == null ? "" : String(texto);
+    return div.innerHTML;
+}
+
+function formatarData(data){
+
+    if(!data) return "Não informada";
+
+    const partes = data.split("-");
+
+    if(partes.length !== 3){
+        return data;
+    }
+
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+function classeStatus(valor){
+
+    const texto = String(valor).toLowerCase();
+
+    if(
+        texto.includes("assinada") ||
+        texto.includes("paga") ||
+        texto.includes("concluído")
+    ){
+        return "etiqueta-verde";
+    }
+
+    if(
+        texto.includes("pendente")
+    ){
+        return "etiqueta-vermelha";
+    }
+
+    if(
+        texto.includes("análise")
+    ){
+        return "etiqueta-amarela";
+    }
+
+    return "";
+}
+
+function definirCarregando(carregando){
+    botao.disabled = carregando || !campoCodigo.value.trim();
+    campoCodigo.disabled = carregando;
+    if(carregando){
+        botao.innerHTML = '<span class="spinner"></span> Consultando...';
+    }else{
+        botao.innerHTML = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.3-4.3"/>
+            </svg>
+            Consultar`;
+    }
+}
+
+campoCodigo.addEventListener("input", function(){
+    botao.disabled = !campoCodigo.value.trim();
+});
+
+botao.disabled = true;
+
+function itemInfo(icone, rotulo, valor, etiqueta){
+
+    const classe = etiqueta
+        ? classeStatus(valor)
+        : "";
+
+    const conteudo = etiqueta
+        ? `<span class="etiqueta ${classe}">${escapar(valor)}</span>`
+        : `<p class="valor">${escapar(valor)}</p>`;
+
+    return `
+        <div class="info">
+            ${icone}
+            <div>
+                <p class="rotulo">${rotulo}</p>
+                ${conteudo}
+            </div>
+        </div>`;
+}
+
+function mostrarErro(titulo, mensagem){
+    areaResultado.innerHTML = `
+        <div class="alerta alerta-erro">
+            ${ICONES.erro}
+            <div>
+                <strong>${escapar(titulo)}</strong>
+                ${escapar(mensagem)}
+            </div>
+        </div>`;
+}
+
+async function consultar(evento){
+    evento.preventDefault();
+
+    const codigo = campoCodigo.value.trim();
+    if(!codigo) return;
+
+    definirCarregando(true);
+    areaResultado.innerHTML = "";
+
+    try{
+        const resposta = await fetch("/cliente/" + encodeURIComponent(codigo));
+        const dados = await resposta.json();
+
+        if(dados.erro){
+            mostrarErro("Cliente não encontrado", "Verifique o código informado e tente novamente.");
+            return;
+        }
+
+        let diagramaHtml;
+
+        if(dados.diagrama && dados.diagrama.disponivel){
+            diagramaHtml = `
+                <div class="diagrama diagrama-ok">
+                    <div class="texto">
+                        ${ICONES.ok}
+                        <div>
+                            <p class="titulo">Disponível para download</p>
+                            <p class="descricao">O diagrama foi aprovado e está pronto.</p>
+                        </div>
+                    </div>
+                    <a class="botao-download" href="${escapar(dados.diagrama.url)}" target="_blank" rel="noopener noreferrer">
+                        ${ICONES.download}
+                        Baixar Diagrama
+                    </a>
+                </div>`;
+        }else{
+            diagramaHtml = `
+                <div class="diagrama diagrama-pendente">
+                    <div class="texto">
+                        ${ICONES.erro}
+                        <div>
+                            <p class="titulo">Não disponível</p>
+                            <p class="descricao">O diagrama ainda não foi liberado para este processo.</p>
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        const procuracao =
+    Array.isArray(dados.procuracao) &&
+    dados.procuracao.includes("Assinada")
+        ? "Assinada"
+        : "Pendente";
+
+const artStatus =
+    dados.art_status &&
+    dados.art_status.includes("Pago")
+        ? "Paga"
+        : "Pendente";
+areaResultado.innerHTML = `
+    <div class="resultado-card">
+
+        <p class="rotulo">Cliente</p>
+        <h2 class="nome-cliente">${escapar(dados.cliente)}</h2>
+
+        <hr class="separador">
+
+        <div class="duas-colunas">
+
+    <div class="secao">
+
+        <p class="secao-titulo">
+            Status
+        </p>
+
+        ${itemInfo(
+            ICONES.escudo,
+            "Andamento",
+            dados.andamento,
+            true
+        )}
+
+        ${itemInfo(
+            ICONES.pessoas,
+            "Procuração",
+            procuracao,
+            true
+        )}
+
+        ${itemInfo(
+            ICONES.arquivo,
+            "ART",
+            artStatus,
+            true
+        )}
+
+    </div>
+
+    <div class="secao">
+
+        <p class="secao-titulo">
+            Dados Técnicos
+        </p>
+
+        ${itemInfo(
+            ICONES.predio,
+            "Concessionária",
+            dados.concessionaria || "Não informada"
+        )}
+
+        ${itemInfo(
+            ICONES.arquivo,
+            "N° ART",
+            dados.n_art || "Não informado"
+        )}
+
+        ${itemInfo(
+            ICONES.arquivo,
+            "Protocolo",
+            dados.protocolo || "Não informado"
+        )}
+
+    </div>
+
+</div>
+
+<div class="secao">
+
+    <p class="secao-titulo">
+        Prazos
+    </p>
+
+    <div class="grade">
+
+        ${itemInfo(
+            ICONES.arquivo,
+            "Data de Envio",
+            formatarData(dados.data_envio)
+        )}
+
+        ${itemInfo(
+            ICONES.arquivo,
+            "Data do Parecer",
+            formatarData(dados.data_parecer)
+        )}
+
+    </div>
+
+</div>
+
+<hr class="separador">
+
+<p class="rotulo">Diagrama</p>
+
+        ${diagramaHtml}
+
+    </div>
+`;        
+    }
+    catch(erro){
+        console.error(erro);
+        mostrarErro("Erro na consulta", "Não foi possível consultar agora. Tente novamente em instantes.");
+    }
+    finally{
+        definirCarregando(false);
+    }
+}
+
+</script>
+
+</body>
+</html>
