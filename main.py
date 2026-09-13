@@ -22,12 +22,9 @@ DATA_SOURCE_ID = "1fdd8a8c-4985-8023-8a95-000bb60ecc0f"
 notion = Client(
     auth=os.getenv("NOTION_TOKEN")
 )
-try:
-    response = notion.data_sources.query(
-        data_source_id=DATA_SOURCE_ID
-    )
-except Exception as e:
-    return {"erro": str(e)}
+response = notion.data_sources.query(
+    data_source_id=DATA_SOURCE_ID
+)
 @app.get("/")
 def home():
     return {"status": "API online"}
