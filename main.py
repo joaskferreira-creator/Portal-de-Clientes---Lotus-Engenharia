@@ -40,9 +40,13 @@ def portal():
 @app.get("/clientes")
 def clientes():
 
+    try:
     response = notion.data_sources.query(
         data_source_id=DATA_SOURCE_ID
     )
+except Exception as e:
+    print("ERRO NOTION:", e)
+    raise
 
     resultado = []
 
@@ -69,7 +73,7 @@ def clientes():
 
 @app.get("/cliente/{codigo_busca}")
 def buscar_cliente(codigo_busca: str):
-
+    print("TOKEN OK:", bool(os.getenv("NOTION_TOKEN")))
     response = notion.data_sources.query(
         data_source_id=DATA_SOURCE_ID
     )
