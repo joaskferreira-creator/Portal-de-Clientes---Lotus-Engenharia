@@ -27,8 +27,7 @@ response = notion.data_sources.query(
 )
 @app.get("/")
 def home():
-    return {"status": "API online"}
-
+    return RedirectResponse(url="/portal")
 
 @app.get("/portal")
 def portal():
