@@ -42,13 +42,9 @@ def portal():
 @app.get("/clientes")
 def clientes():
 
-    try:
     response = notion.data_sources.query(
-        data_source_id=DATA_SOURCE_ID
-    )
-except Exception as e:
-    print("ERRO NOTION:", e)
-    raise
+    data_source_id=DATA_SOURCE_ID
+)
 
     resultado = []
 
