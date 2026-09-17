@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lotus Engenharia</title>
+<title>Portal Cliente | Consulta de Andamento</title>
 <meta name="description" content="Consulte o andamento do seu processo, documentação e diagramas de forma rápida e segura.">
 
 <style>
@@ -60,16 +60,21 @@ body{
     margin-bottom:28px;
 }
 
-.logo-empresa{
-    text-align:center;
-    margin-bottom:20px;
+.icone-escudo{
+    width:56px;
+    height:56px;
+    margin:0 auto 16px;
+    border-radius:16px;
+    background:rgba(31,95,191,0.10);
+    display:flex;
+    align-items:center;
+    justify-content:center;
 }
 
-.logo-empresa img{
-    max-width:180px;
-    height:auto;
-    display:block;
-    margin:0 auto;
+.icone-escudo svg{
+    width:28px;
+    height:28px;
+    stroke:var(--primary);
 }
 
 h1{
@@ -227,33 +232,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
     gap:16px;
     margin-bottom:16px;
 }
-.secao{
-    border:1px solid var(--border);
-    border-radius:12px;
-    padding:16px;
-    box-shadow:0 2px 8px rgba(0,0,0,0.04);
-}
-.secao-titulo{
-    margin:0 0 14px 0;
-    font-size:12px;
-    font-weight:700;
-    letter-spacing:1px;
-    text-transform:uppercase;
-    color:var(--primary);
-}
 
-.duas-colunas{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:16px;
-    margin-bottom:18px;
-}
-
-@media (max-width:700px){
-    .duas-colunas{
-        grid-template-columns:1fr;
-    }
-}
 @media (max-width:520px){
     .grade{grid-template-columns:1fr}
 }
@@ -370,20 +349,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
 
 .botao-download:hover{background:rgba(30,158,90,0.10)}
 .botao-download svg{width:15px;height:15px;margin:0}
-.info-ajuda{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    width:16px;
-    height:16px;
-    margin-left:4px;
-    border-radius:50%;
-    background:var(--primary);
-    color:#fff;
-    font-size:11px;
-    cursor:help;
-    font-weight:700;
-}
+
 .rodape{
     margin-top:22px;
     text-align:center;
@@ -399,11 +365,12 @@ button:disabled{opacity:.55;cursor:not-allowed}
 <main class="card">
 
     <header class="cabecalho">
-    <div class="logo-empresa">
-        <img src="/static/logo.png" alt="Logo da empresa">
-    </div>
-</header>
-        <h1>Portal dos Clientes Lotus Engenharia</h1>
+        <div class="icone-escudo">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+        </div>
+        <h1>Portal Cliente</h1>
         <p class="subtitulo">
             Consulte o andamento do seu processo, documentação e diagramas
             de forma rápida e segura.
@@ -472,16 +439,6 @@ function formatarData(data){
     }
 
     return `${partes[2]}/${partes[1]}/${partes[0]}`;
-}
-function calcularDataPretendida(data){
-
-    if(!data) return "Não informada";
-
-    const dataBase = new Date(data);
-
-    dataBase.setDate(dataBase.getDate() + 7);
-
-    return dataBase.toLocaleDateString("pt-BR");
 }
 function classeStatus(valor){
 
@@ -617,11 +574,10 @@ async function consultar(evento){
         : "Pendente";
 
 const artStatus =
-    String(dados.art_status || "")
-        .trim()
-        .toLowerCase() === "pago"
-            ? "Paga"
-            : "Pendente";
+    dados.art_status &&
+    dados.art_status.toLowerCase() === "pago"
+        ? "Paga"
+        : "Pendente";
 areaResultado.innerHTML = `
     <div class="resultado-card">
 
@@ -630,95 +586,64 @@ areaResultado.innerHTML = `
 
         <hr class="separador">
 
-        <div class="duas-colunas">
+        <div class="grade">
 
-    <div class="secao">
+            ${itemInfo(
+                ICONES.escudo,
+                "Andamento",
+                dados.andamento,
+                true
+            )}
 
-        <p class="secao-titulo">
-            Status
-        </p>
+            ${itemInfo(
+                ICONES.predio,
+                "Concessionária",
+                dados.concessionaria || "Não informada"
+            )}
 
-        ${itemInfo(
-    ICONES.arquivo,
-    `Data Pretendida de Envio
-    <span
-        class="info-ajuda"
-        title="Data prevista para recebimento do projeto com a documentação mínima necessária para elaboração."
-    >i</span>`,
-    calcularDataPretendida(dados.criado_em)
-)}
+            ${itemInfo(
+                ICONES.pessoas,
+                "Procuração",
+                procuracao,
+                true
+            )}
 
-        ${itemInfo(
-            ICONES.pessoas,
-            "Procuração",
-            procuracao,
-            true
-        )}
+            ${itemInfo(
+                ICONES.arquivo,
+                "ART",
+                artStatus,
+                true
+            )}
 
-        ${itemInfo(
-            ICONES.arquivo,
-            "ART",
-            artStatus,
-            true
-        )}
+            ${itemInfo(
+                ICONES.arquivo,
+                "N° ART",
+                dados.n_art || "Não informado"
+            )}
 
-    </div>
+            ${itemInfo(
+                ICONES.arquivo,
+                "Data do Parecer",
+                formatarData(dados.data_parecer)
+            )}
 
-    <div class="secao">
+            ${itemInfo(
+                ICONES.arquivo,
+                "Data de Envio",
+                formatarData(dados.data_envio)
+            )}
 
-        <p class="secao-titulo">
-            Dados Técnicos
-        </p>
+            ${itemInfo(
+                ICONES.arquivo,
+                "Protocolo",
+                dados.protocolo || "Não informado"
+            )}
 
-        ${itemInfo(
-            ICONES.predio,
-            "Concessionária",
-            dados.concessionaria || "Não informada"
-        )}
+        </div>
 
-        ${itemInfo(
-            ICONES.arquivo,
-            "N° ART",
-            dados.n_art || "Não informado"
-        )}
+        <hr class="separador">
 
-        ${itemInfo(
-            ICONES.arquivo,
-            "Protocolo",
-            dados.protocolo || "Não informado"
-        )}
-
-    </div>
-
-</div>
-
-<div class="secao">
-
-    <p class="secao-titulo">
-        Prazos
-    </p>
-
-    <div class="grade">
-
-        ${itemInfo(
-            ICONES.arquivo,
-            "Data de Envio",
-            formatarData(dados.data_envio)
-        )}
-
-        ${itemInfo(
-            ICONES.arquivo,
-            "Data do Parecer",
-            formatarData(dados.data_parecer)
-        )}
-
-    </div>
-
-</div>
-
-<hr class="separador">
-
-<p class="rotulo">Diagrama</p>
+        <p class="rotulo">Diagrama</p>
 
         ${diagramaHtml}
 
