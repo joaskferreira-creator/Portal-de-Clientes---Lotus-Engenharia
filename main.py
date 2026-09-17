@@ -199,7 +199,7 @@ def buscar_cliente(codigo_busca: str):
 
                 "procuracao": procuracao,
 
-                "art_status": ", ".join(art_status),
+                "art_status": art_status,
 
                 "n_art": n_art,
 
