@@ -370,7 +370,20 @@ button:disabled{opacity:.55;cursor:not-allowed}
 
 .botao-download:hover{background:rgba(30,158,90,0.10)}
 .botao-download svg{width:15px;height:15px;margin:0}
-
+.info-ajuda{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:16px;
+    height:16px;
+    margin-left:4px;
+    border-radius:50%;
+    background:var(--primary);
+    color:#fff;
+    font-size:11px;
+    cursor:help;
+    font-weight:700;
+}
 .rodape{
     margin-top:22px;
     text-align:center;
@@ -459,6 +472,16 @@ function formatarData(data){
     }
 
     return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+function calcularDataPretendida(data){
+
+    if(!data) return "Não informada";
+
+    const dataBase = new Date(data);
+
+    dataBase.setDate(dataBase.getDate() + 7);
+
+    return dataBase.toLocaleDateString("pt-BR");
 }
 function classeStatus(valor){
 
@@ -616,11 +639,14 @@ areaResultado.innerHTML = `
         </p>
 
         ${itemInfo(
-            ICONES.escudo,
-            "Andamento",
-            dados.andamento,
-            true
-        )}
+    ICONES.arquivo,
+    `Data Pretendida de Envio
+    <span
+        class="info-ajuda"
+        title="Data prevista para recebimento do projeto com a documentação mínima necessária para elaboração."
+    >i</span>`,
+    calcularDataPretendida(dados.criado_em)
+)}
 
         ${itemInfo(
             ICONES.pessoas,
