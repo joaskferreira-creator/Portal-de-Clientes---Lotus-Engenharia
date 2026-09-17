@@ -595,7 +595,7 @@ async function consultar(evento){
 
 const artStatus =
     dados.art_status &&
-    dados.art_status.includes("Pago")
+    dados.art_status.toLowerCase() === "Pago"
         ? "Paga"
         : "Pendente";
 areaResultado.innerHTML = `
