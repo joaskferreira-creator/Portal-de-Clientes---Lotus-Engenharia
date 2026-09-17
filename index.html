@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portal Cliente | Consulta de Andamento</title>
+<title>Lotus Engenharia</title>
 <meta name="description" content="Consulte o andamento do seu processo, documentação e diagramas de forma rápida e segura.">
 
 <style>
@@ -60,21 +60,16 @@ body{
     margin-bottom:28px;
 }
 
-.icone-escudo{
-    width:56px;
-    height:56px;
-    margin:0 auto 16px;
-    border-radius:16px;
-    background:rgba(31,95,191,0.10);
-    display:flex;
-    align-items:center;
-    justify-content:center;
+.logo-empresa{
+    text-align:center;
+    margin-bottom:20px;
 }
 
-.icone-escudo svg{
-    width:28px;
-    height:28px;
-    stroke:var(--primary);
+.logo-empresa img{
+    max-width:180px;
+    height:auto;
+    display:block;
+    margin:0 auto;
 }
 
 h1{
@@ -232,7 +227,33 @@ button:disabled{opacity:.55;cursor:not-allowed}
     gap:16px;
     margin-bottom:16px;
 }
+.secao{
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:16px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.04);
+}
+.secao-titulo{
+    margin:0 0 14px 0;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:var(--primary);
+}
 
+.duas-colunas{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+    margin-bottom:18px;
+}
+
+@media (max-width:700px){
+    .duas-colunas{
+        grid-template-columns:1fr;
+    }
+}
 @media (max-width:520px){
     .grade{grid-template-columns:1fr}
 }
@@ -365,12 +386,11 @@ button:disabled{opacity:.55;cursor:not-allowed}
 <main class="card">
 
     <header class="cabecalho">
-        <div class="icone-escudo">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            </svg>
-        </div>
-        <h1>Portal Cliente</h1>
+    <div class="logo-empresa">
+        <img src="/static/logo.png" alt="Logo da empresa">
+    </div>
+</header>
+        <h1>Portal dos Clientes Lotus Engenharia</h1>
         <p class="subtitulo">
             Consulte o andamento do seu processo, documentação e diagramas
             de forma rápida e segura.
@@ -575,7 +595,7 @@ async function consultar(evento){
 
 const artStatus =
     dados.art_status &&
-    dados.art_status.toLowerCase() === "pago"
+    dados.art_status.includes("Pago")
         ? "Paga"
         : "Pendente";
 areaResultado.innerHTML = `
@@ -586,64 +606,92 @@ areaResultado.innerHTML = `
 
         <hr class="separador">
 
-        <div class="grade">
+        <div class="duas-colunas">
 
-            ${itemInfo(
-                ICONES.escudo,
-                "Andamento",
-                dados.andamento,
-                true
-            )}
+    <div class="secao">
 
-            ${itemInfo(
-                ICONES.predio,
-                "Concessionária",
-                dados.concessionaria || "Não informada"
-            )}
+        <p class="secao-titulo">
+            Status
+        </p>
 
-            ${itemInfo(
-                ICONES.pessoas,
-                "Procuração",
-                procuracao,
-                true
-            )}
+        ${itemInfo(
+            ICONES.escudo,
+            "Andamento",
+            dados.andamento,
+            true
+        )}
 
-            ${itemInfo(
-                ICONES.arquivo,
-                "ART",
-                artStatus,
-                true
-            )}
+        ${itemInfo(
+            ICONES.pessoas,
+            "Procuração",
+            procuracao,
+            true
+        )}
 
-            ${itemInfo(
-                ICONES.arquivo,
-                "N° ART",
-                dados.n_art || "Não informado"
-            )}
+        ${itemInfo(
+            ICONES.arquivo,
+            "ART",
+            artStatus,
+            true
+        )}
 
-            ${itemInfo(
-                ICONES.arquivo,
-                "Data do Parecer",
-                formatarData(dados.data_parecer)
-            )}
+    </div>
 
-            ${itemInfo(
-                ICONES.arquivo,
-                "Data de Envio",
-                formatarData(dados.data_envio)
-            )}
+    <div class="secao">
 
-            ${itemInfo(
-                ICONES.arquivo,
-                "Protocolo",
-                dados.protocolo || "Não informado"
-            )}
+        <p class="secao-titulo">
+            Dados Técnicos
+        </p>
 
-        </div>
+        ${itemInfo(
+            ICONES.predio,
+            "Concessionária",
+            dados.concessionaria || "Não informada"
+        )}
 
-        <hr class="separador">
+        ${itemInfo(
+            ICONES.arquivo,
+            "N° ART",
+            dados.n_art || "Não informado"
+        )}
 
-        <p class="rotulo">Diagrama</p>
+        ${itemInfo(
+            ICONES.arquivo,
+            "Protocolo",
+            dados.protocolo || "Não informado"
+        )}
+
+    </div>
+
+</div>
+
+<div class="secao">
+
+    <p class="secao-titulo">
+        Prazos
+    </p>
+
+    <div class="grade">
+
+        ${itemInfo(
+            ICONES.arquivo,
+            "Data de Envio",
+            formatarData(dados.data_envio)
+        )}
+
+        ${itemInfo(
+            ICONES.arquivo,
+            "Data do Parecer",
+            formatarData(dados.data_parecer)
+        )}
+
+    </div>
+
+</div>
+
+<hr class="separador">
+
+<p class="rotulo">Diagrama</p>
 
         ${diagramaHtml}
 
